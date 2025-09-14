@@ -1,4 +1,4 @@
-# fun.pump
+# BoostPad
 
 ## Technology Stack & Tools
 
