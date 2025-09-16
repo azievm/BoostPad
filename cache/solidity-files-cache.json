@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/majidaziev/Desktop/dev_projects/BoostPad/contracts/Factory.sol": {
-      "lastModificationDate": 1757962546902,
-      "contentHash": "7703ecb808e2090400abdcffa9076fb2",
+      "lastModificationDate": 1758048677951,
+      "contentHash": "69d7778b6c2bb4e75651db7d4e8ce0b7",
       "sourceName": "contracts/Factory.sol",
       "solcConfig": {
         "version": "0.8.27",
