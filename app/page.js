@@ -21,6 +21,11 @@ export default function Home() {
   async function loadBlockchainData() {
     const provider = new ethers.BrowserProvider(window.ethereum);
     setProvider(provider);
+
+    const network = await provider.getNetwork();
+    console.log(network);
+
+    console.log(config["31337"].factory.address);
   }
 
   useEffect(() => {
