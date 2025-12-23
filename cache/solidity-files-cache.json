@@ -2,17 +2,18 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/majidaziev/Desktop/dev_projects/BoostPad/contracts/Factory.sol": {
-      "lastModificationDate": 1758048677951,
-      "contentHash": "69d7778b6c2bb4e75651db7d4e8ce0b7",
+      "lastModificationDate": 1758218064755,
+      "contentHash": "83193957daadd67accaf57a863795a99",
       "sourceName": "contracts/Factory.sol",
       "solcConfig": {
         "version": "0.8.27",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "viaIR": true,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -46,11 +47,12 @@
       "solcConfig": {
         "version": "0.8.27",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "viaIR": true,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -84,11 +86,12 @@
       "solcConfig": {
         "version": "0.8.27",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "viaIR": true,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -125,11 +128,12 @@
       "solcConfig": {
         "version": "0.8.27",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "viaIR": true,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -161,11 +165,12 @@
       "solcConfig": {
         "version": "0.8.27",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "viaIR": true,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -199,11 +204,12 @@
       "solcConfig": {
         "version": "0.8.27",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "viaIR": true,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -237,11 +243,12 @@
       "solcConfig": {
         "version": "0.8.27",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
-            "enabled": false,
+            "enabled": true,
             "runs": 200
           },
+          "viaIR": true,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [

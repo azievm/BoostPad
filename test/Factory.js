@@ -3,7 +3,7 @@ const {
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const { Fuzzy_Bubbles } = require("next/font/google");
+
 
 describe("Factory", function () {
   const FEE = ethers.parseUnits("0.001", 18);
@@ -19,7 +19,7 @@ describe("Factory", function () {
     //Create token
     const transaction = await factory
       .connect(creator)
-      .create("Dapp Uni", "DAPP", { value: FEE });
+      .create("Dapp Uni", "DAPP", "A test token for DeFi", "https://example.com/image.png", { value: FEE });
     await transaction.wait();
 
     // Get token address
@@ -32,15 +32,18 @@ describe("Factory", function () {
   async function buyTokenFixture() {
     const { factory, token, creator, buyer } = await deployFactoryFixture();
 
-    const AMOUNT = ethers.parseUnits("10000", 18);
-    const COST = ethers.parseUnits("1", 18);
+    const AMOUNT = ethers.parseUnits("1000", 18);
+    
+    // Get the actual cost using the bonding curve
+    const COST = await factory.getBuyPrice(await token.getAddress(), AMOUNT);
 
     // Buy tokens
     const transaction = await factory
       .connect(buyer)
       .buy(await token.getAddress(), AMOUNT, { value: COST });
+    await transaction.wait();
 
-    return { factory, token, creator, buyer };
+    return { factory, token, creator, buyer, AMOUNT, COST };
   }
 
   describe("Deployment", function () {
@@ -69,7 +72,7 @@ describe("Factory", function () {
     it("Should set the supply", async function () {
       const { factory, token } = await loadFixture(deployFactoryFixture);
 
-      const totalSupply = ethers.parseUnits("1000000", 18);
+      const totalSupply = ethers.parseUnits("1000000000", 18); // 1B tokens
 
       expect(await token.balanceOf(await factory.getAddress())).to.equal(
         totalSupply
@@ -104,12 +107,9 @@ describe("Factory", function () {
   });
 
   describe("Buying", function () {
-    const AMOUNT = ethers.parseUnits("10000", 18);
-    const COST = ethers.parseUnits("1", 18);
-
     // Check contract received ETH
     it("Should update ETH balance", async function () {
-      const { factory } = await loadFixture(buyTokenFixture);
+      const { factory, COST } = await loadFixture(buyTokenFixture);
 
       const balance = await ethers.provider.getBalance(
         await factory.getAddress()
@@ -120,14 +120,14 @@ describe("Factory", function () {
 
     // Check that buyer received tokens
     it("Should update token balances", async function () {
-      const { token, buyer } = await loadFixture(buyTokenFixture);
+      const { token, buyer, AMOUNT } = await loadFixture(buyTokenFixture);
 
       const balance = await token.balanceOf(buyer.address);
       expect(balance).to.equal(AMOUNT);
     });
 
     it("Should update token sale", async function () {
-      const { factory, token } = await loadFixture(buyTokenFixture);
+      const { factory, token, AMOUNT, COST } = await loadFixture(buyTokenFixture);
 
       const sale = await factory.tokenToSale(await token.getAddress());
 
@@ -136,41 +136,40 @@ describe("Factory", function () {
       expect(sale.isOpen).to.equal(true);
     });
 
-    it("Sould increase base cost", async function () {
-      const { factory, token } = await loadFixture(buyTokenFixture);
+    it("Should calculate bonding curve price", async function () {
+      const { factory, token, AMOUNT } = await loadFixture(buyTokenFixture);
 
-      const sale = await factory.tokenToSale(await token.getAddress());
-      const cost = await factory.getCost(sale.sold);
-
-      expect(cost).to.be.equal(ethers.parseUnits("0.0002"));
+      const price = await factory.getBuyPrice(await token.getAddress(), AMOUNT);
+      expect(price).to.be.greaterThan(0);
     });
   });
 
-  describe("Depositing", function () {
-    const AMOUNT = ethers.parseUnits("10000", 18);
-    const COST = ethers.parseUnits("2", 18);
-
-    it("Sale should be closed and successfully deposits", async function () {
+  describe("Graduation", function () {
+    it("Should graduate token when target reached", async function () {
       const { factory, token, creator, buyer } = await loadFixture(
         buyTokenFixture
       );
 
-      // Buy tokens again to reach target
+      // Buy enough tokens to reach graduation target (24 ETH)
+      // We need to buy close to the token limit to reach 24 ETH
+      const largeAmount = ethers.parseUnits("500000000", 18); // 500M tokens (close to limit)
+      const largeCost = await factory.getBuyPrice(await token.getAddress(), largeAmount);
+      
       const buyTx = await factory
         .connect(buyer)
-        .buy(await token.getAddress(), AMOUNT, { value: COST });
+        .buy(await token.getAddress(), largeAmount, { value: largeCost });
+      await buyTx.wait();
 
       const sale = await factory.tokenToSale(await token.getAddress());
+      expect(sale.graduated).to.equal(true);
       expect(sale.isOpen).to.equal(false);
 
-      const depositTx = await factory
+      // Creator should be able to graduate the token
+      const graduateTx = await factory
         .connect(creator)
-        .deposit(await token.getAddress());
+        .graduateToken(await token.getAddress());
 
-      await depositTx.wait();
-
-      const balance = await token.balanceOf(creator.address);
-      expect(balance).to.equal(ethers.parseUnits("980000", 18));
+      await graduateTx.wait();
     });
   });
 

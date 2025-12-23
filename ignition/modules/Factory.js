@@ -4,15 +4,13 @@
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
 const { ethers } = require("hardhat");
 
-const FEE = ethers.parseUnits("0.01", 18);
+const FactoryModule = buildModule("FactoryModule", (m) => {
+  // Creation fee: 0.01 ETH
+  const fee = m.getParameter("fee", "10000000000000000"); // 0.01 ETH in wei
 
-module.exports = buildModule("FactoryModule", (m) => {
-  // Get parameters
-  const fee = m.getParameter("fee", FEE);
-
-  // Define factory
   const factory = m.contract("Factory", [fee]);
 
-  // Return factory
   return { factory };
 });
+
+module.exports = FactoryModule;
